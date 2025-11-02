@@ -1,0 +1,22 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "开始任务",
+            "type": "npm",
+            "script": "watch",
+            "isBackground": true,
+            "problemMatcher": {
+                "owner": "vite",
+                "pattern": {
+                    "regexp": "^\\[Vite-Listener\\].*检测到完成编译.*$"
+                },
+                "background": {
+                    "activeOnStart": true,
+                    "beginsPattern": "^\\[vite\\].*building for production...$",
+                    "endsPattern": "^\\[Vite-Listener\\].*检测到完成编译.*$"
+                }
+            }
+        },
+    ]
+}

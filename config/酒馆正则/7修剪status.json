@@ -1,0 +1,18 @@
+{
+    "id": "b2e74a69-1f22-4db0-8018-6c9f7938ba3c",
+    "scriptName": "7修剪status",
+    "findRegex": "/\\/\\/#region status\\nlet status = `(.*?)`;?\\s*\\/\\/#endregion/gs",
+    "replaceString": "```\n<!DOCTYPE html>\n<html>\n<body>$1<body>\n</html>\n```",
+    "trimStrings": [],
+    "placement": [
+        1,
+        2
+    ],
+    "disabled": false,
+    "markdownOnly": true,
+    "promptOnly": false,
+    "runOnEdit": true,
+    "substituteRegex": 0,
+    "minDepth": null,
+    "maxDepth": null
+}

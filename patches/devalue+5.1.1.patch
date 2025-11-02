@@ -1,0 +1,30 @@
+diff --git a/node_modules/devalue/src/uneval.js b/node_modules/devalue/src/uneval.js
+index ce3ef34..5a72dbd 100644
+--- a/node_modules/devalue/src/uneval.js
++++ b/node_modules/devalue/src/uneval.js
+@@ -10,7 +10,7 @@ import {
+ } from './utils.js';
+ 
+ const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_$';
+-const unsafe_chars = /[<\b\f\n\r\t\0\u2028\u2029]/g;
++const unsafe_chars = /[\b\f\n\r\t\0\u2028\u2029]/g;
+ const reserved =
+ 	/^(?:do|if|in|for|int|let|new|try|var|byte|case|char|else|enum|goto|long|this|void|with|await|break|catch|class|const|final|float|short|super|throw|while|yield|delete|double|export|import|native|return|switch|throws|typeof|boolean|default|extends|finally|package|private|abstract|continue|debugger|function|volatile|interface|protected|transient|implements|instanceof|synchronized)$/;
+ 
+@@ -327,14 +327,14 @@ function escape_unsafe_chars(str) {
+ 
+ /** @param {string} key */
+ function safe_key(key) {
+-	return /^[_$a-zA-Z][_$a-zA-Z0-9]*$/.test(key)
++	return /^\p{ID_Start}[\p{ID_Continue}]*$/u.test(key) && !reserved.test(key)
+ 		? key
+ 		: escape_unsafe_chars(JSON.stringify(key));
+ }
+ 
+ /** @param {string} key */
+ function safe_prop(key) {
+-	return /^[_$a-zA-Z][_$a-zA-Z0-9]*$/.test(key)
++	return /^\p{ID_Start}[\p{ID_Continue}]*$/u.test(key) && !reserved.test(key)
+ 		? `.${key}`
+ 		: `[${escape_unsafe_chars(JSON.stringify(key))}]`;
+ }

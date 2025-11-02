@@ -1,0 +1,25 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "编译代码并调试酒馆网页 (Edge)",
+            "type": "msedge",
+            "request": "launch",
+            "url": "http://localhost:8000",
+            "disableNetworkCache": true,
+            "internalConsoleOptions": "neverOpen",
+            "cwd": "${workspaceFolder}",
+            "timeout": 100000,
+            "webRoot": "${workspaceFolder}",
+            "preLaunchTask": "开始任务",
+            "resolveSourceMapLocations": [
+                "${workspaceFolder}/**",
+                "http://localhost:5501/**"
+            ],
+            "skipFiles": [
+                "**/jquery*.min.js",
+                "**/node_modules/**"
+            ],
+        },
+    ]
+}

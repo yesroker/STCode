@@ -1,0 +1,17 @@
+{
+    "id": "9fc657ba-d91f-4e07-9a97-437fac5f2eb5",
+    "scriptName": "2插入STCode",
+    "findRegex": "/^/",
+    "replaceString": "```\n<body>\n<script>\n$('body').load('http://localhost:5501/dist/index.html')\n</script>\n</body>\n```\n",
+    "trimStrings": [],
+    "placement": [
+        2
+    ],
+    "disabled": false,
+    "markdownOnly": true,
+    "promptOnly": false,
+    "runOnEdit": true,
+    "substituteRegex": 0,
+    "minDepth": null,
+    "maxDepth": null
+}

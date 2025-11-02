@@ -1,0 +1,17 @@
+{
+    "id": "66dc95e0-74d5-479d-9499-2283355f7390",
+    "scriptName": "3指定region不发送ai",
+    "findRegex": "/\\/\\/#region (import|export|worldBook|think|task|data|postProcess|privateData|status|task).*?\\/\\/#endregion/gs",
+    "replaceString": "",
+    "trimStrings": [],
+    "placement": [
+        2
+    ],
+    "disabled": false,
+    "markdownOnly": false,
+    "promptOnly": true,
+    "runOnEdit": true,
+    "substituteRegex": 0,
+    "minDepth": null,
+    "maxDepth": null
+}
