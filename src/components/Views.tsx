@@ -1,5 +1,5 @@
-import { VIEW_TABS, type View } from '@/lib/constants';
-import { AppContext } from '@/context/AppContext';
+import { VIEW_TABS, type View } from '@/types&constants';
+import { AppContext } from '@/AppContext';
 import { useContext } from 'react';
 
 const Views = () => {

@@ -1,6 +1,6 @@
 import { useContext } from 'react';
-import { cn } from '../../lib/utils';
-import { AppContext } from '../../context/AppContext';
+import { cn } from '../../utils';
+import { AppContext } from '../../AppContext';
 
 const DiffToggle = () => {
   const appContext = useContext(AppContext);

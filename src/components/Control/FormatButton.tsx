@@ -1,7 +1,7 @@
-import { AppContext } from '@/context/AppContext';
+import { AppContext } from '@/AppContext';
 import { useContext } from 'react';
 import * as prettier from 'prettier/standalone';
-import { PRETTIER_OPTIONS } from '@/lib/constants';
+import { PRETTIER_OPTIONS } from '@/types&constants';
 
 const FormatButton = () => {
   const appContext = useContext(AppContext);

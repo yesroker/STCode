@@ -1,0 +1,17 @@
+{
+    "id": "575c339b-7814-4a45-a70d-01fe5a099b45",
+    "scriptName": "2插入STCode(从cdn)",
+    "findRegex": "/$/",
+    "replaceString": "\n```\n<body>\n<script>\n$('body').load('https://testingcf.jsdelivr.net/gh/yesroker/STCode/dist/index.html')\n</script>\n</body>\n```\n",
+    "trimStrings": [],
+    "placement": [
+        2
+    ],
+    "disabled": false,
+    "markdownOnly": true,
+    "promptOnly": false,
+    "runOnEdit": true,
+    "substituteRegex": 0,
+    "minDepth": null,
+    "maxDepth": null
+}

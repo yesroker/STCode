@@ -1,6 +1,6 @@
 import { useContext } from 'react';
-import { AppContext } from '@/context/AppContext';
-import { cn } from '@/lib/utils'; 
+import { AppContext } from '@/AppContext';
+import { cn } from '@/utils'; 
 
 
 

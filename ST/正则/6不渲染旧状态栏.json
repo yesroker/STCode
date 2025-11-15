@@ -1,0 +1,17 @@
+{
+    "id": "3f35cdcf-49fb-4091-874e-caace8a5ffd3",
+    "scriptName": "6不渲染旧状态栏",
+    "findRegex": "/\\/\\/#region status.*?\\/\\/#endregion/gs",
+    "replaceString": "",
+    "trimStrings": [],
+    "placement": [
+        2
+    ],
+    "disabled": false,
+    "markdownOnly": false,
+    "promptOnly": true,
+    "runOnEdit": true,
+    "substituteRegex": 0,
+    "minDepth": 2,
+    "maxDepth": null
+}

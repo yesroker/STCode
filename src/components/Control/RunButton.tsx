@@ -1,9 +1,10 @@
-import { cn } from '@/lib/utils';
+import { cn } from '@/utils';
 import toastr from 'toastr';
-import { AppContext } from '@/context/AppContext';
+import { AppContext } from '@/AppContext';
 import { useContext } from 'react';
 import { handleImportAndExportRegion, matchRegion, msglize, type CodeResults } from '@/lib/region';
 import { JSONPath } from 'jsonpath-plus';
+import _ from 'lodash';
 // import * as Babel from '@babel/standalone';
 // import { createRoot, type Root } from 'react-dom/client';
 
@@ -31,11 +32,21 @@ const RunButton = () => {
 
       //处理普通的块
       const newMessage = msglize(currentEditorValue, codeResults, currentView);
-      let payload: { message_id: number } & Partial<ChatMessage> = {
+      const payload: { message_id: number } & Partial<ChatMessage> = {
         message_id: getCurrentMessageId(),
         message: newMessage,
       };
+      //处理虚拟文件系统
+      if (codeResults.vfs) {
+        const vfs = codeResults.vfs;
+        const chatVars = getVariables({ type: 'chat' });
+        _.set(chatVars, 'vfs', vfs.chat);
+        replaceVariables(chatVars, { type: 'chat' });
 
+        const globalVars = getVariables({ type: 'global' });
+        _.set(globalVars, 'vfs', vfs.global);
+        replaceVariables(globalVars, { type: 'global' });
+      }
       //处理世界书，在本架构下，世界书是个常量，不应该变化
       if (codeResults.entryMap) {
         const entryMap = codeResults.entryMap;
@@ -53,17 +64,6 @@ const RunButton = () => {
         await replaceWorldbook(charSTWorldName, stWorldbook);
       }
 
-      //处理状态栏，状态栏的模板是可以随游戏而变化的
-      if (codeResults.status) {
-        const statusTemplate = matchRegion(currentEditorValue, 'status');
-        payload = {
-          ...payload,
-          data: {
-            ...getChatMessages(getCurrentMessageId())[0].data,
-            STCode: { status: statusTemplate },
-          },
-        };
-      }
       setChatMessages([payload], { refresh: 'affected' });
     } catch (error) {
       toastr.error(String(error));

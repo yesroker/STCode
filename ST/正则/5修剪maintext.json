@@ -1,0 +1,17 @@
+{
+    "id": "0f2cd0cd-c2b3-4140-a5ca-3c970de33bd2",
+    "scriptName": "5修剪mainText",
+    "findRegex": "/\\/\\/#region mainText\\n*let mainText = `(.*?)`;?\\s*\\/\\/#endregion/gs",
+    "replaceString": "$1",
+    "trimStrings": [],
+    "placement": [
+        2
+    ],
+    "disabled": false,
+    "markdownOnly": true,
+    "promptOnly": true,
+    "runOnEdit": false,
+    "substituteRegex": 0,
+    "minDepth": null,
+    "maxDepth": null
+}

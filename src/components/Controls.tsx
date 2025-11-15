@@ -1,7 +1,7 @@
 import DiffToggle from './Control/DiffToggle';
 import MinimizeButton from './Control/MinimizeButton';
 import RunButton from './Control/RunButton';
-import { cn } from '../lib/utils';
+import { cn } from '../utils';
 import FormatButton from './Control/FormatButton';
 
 type ControlsProps = {

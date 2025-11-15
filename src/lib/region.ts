@@ -1,21 +1,18 @@
-import { uneval } from 'devalue';
-import type { View } from './constants';
+import type { File, View } from '@/types&constants';
 import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
 import * as _ from 'lodash';
 
-export type File = 'Data' | 'All' | 'PreviousData' | 'PreviousAll';
 export type CodeResults = {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  data: { [key: string]: any };
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  privateData: { [key: string]: any };
+  data: { [key: string]: unknown };
+  privateData: { [key: string]: unknown };
   mainText?: string;
   status?: string;
   entryMap?: Map<string, string>;
+  vfs?: {chat:Record<string,unknown>,global:Record<string,unknown>};
 };
 
 //#region 1. 动态加载模板文件
-const templateModules = import.meta.glob('/config/region/*.js', {
+const templateModules = import.meta.glob('/src/region/*.js', {
   query: '?raw',
   eager: true,
   import: 'default',
@@ -60,18 +57,26 @@ const REGION_DEFINITIONS = [
     msglize: null,
   },
   {
+    name: 'vfs',
+    inherit: false,
+    partOfAll: true,
+    partOfData: false,
+    msglize: null,
+  },
+  {
     name: 'data',
     inherit: true,
     partOfAll: true,
     partOfData: true,
-    msglize: (res: CodeResults) => `const data = ${uneval(res.data)}`,
+    //改为yaml
+    msglize: (res: CodeResults) => `const data = ${JSON.stringify(res.data,null,1)}`,
   },
   {
     name: 'privateData',
     inherit: true,
     partOfAll: true,
     partOfData: true,
-    msglize: (res: CodeResults) => `const privateData = ${uneval(res.privateData)}`,
+    msglize: (res: CodeResults) => `const privateData = ${JSON.stringify(res.privateData,null,1)}`,
   },
   {
     name: 'think',
@@ -229,11 +234,11 @@ export async function Editorlize() {
     (obj, name) => {
       obj[name] = {
         value: undefined,
-        idIn: -1,
+        idIn: -1
       };
       return obj;
     },
-    {} as Record<RegionName, QueryItem>,
+    {} as Record<RegionName, QueryItem>
   );
   let isCurrentMessage = true;
   let currentId = getCurrentMessageId();
@@ -259,7 +264,7 @@ export async function Editorlize() {
               additionalSet.add(charSTWorldName);
               TavernHelper.rebindCharWorldbooks('current', {
                 primary,
-                additional: [...additionalSet],
+                additional: [...additionalSet]
               });
             }
             //获得条目形成str
@@ -271,6 +276,12 @@ ${entry.content}
 \`)\n`;
             });
             query[rName].value = str;
+          } else if (rName === 'vfs') {
+            const charVars = getVariables({ type: 'chat' });
+            const chatVfs = _.get(charVars, 'vfs', { isOpen: true, children: {} });
+            const globalVars = getVariables({ type: 'global' });
+            const globalVfs = _.get(globalVars, 'vfs', { isOpen: true, children: {} });
+            query[rName].value = `const vfs = ${JSON.stringify({ chat: chatVfs, global: globalVfs }, null, 2)};`;
           } else {
             query[rName].value = matchRegion(msg, rName);
           }
@@ -285,12 +296,8 @@ ${entry.content}
       // 2. 处理 'inherit: true' (继承前文)
       if (config.inherit) {
         if (!query[rName].value) {
-          if (rName === 'status') {
-            //status特殊，这里找的是模板，而不是序列化后的值
-            query.status.value = _.get(msgs[0].data, 'STCode.status');
-          } else {
-            query[rName].value = matchRegion(msg, rName);
-          }
+          query[rName].value = matchRegion(msg, rName);
+
           query[rName].idIn = currentId;
         }
       }
@@ -301,10 +308,8 @@ ${entry.content}
       const baseQueryItem = query[baseName];
 
       if (!query[name].value && baseQueryItem && currentId < baseQueryItem.idIn) {
-        //status和worldBook暂时单独处理
-        if (name === 'previous_status') {
-          query.previous_status.value = _.get(msgs[0].data, 'STCode.status');
-        } else if (name === 'previous_worldBook') {
+        //worldBook暂时单独处理
+        if (name === 'previous_worldBook') {
           query.previous_worldBook.value = query.worldBook.value;
         } else {
           query[name].value = matchRegion(msg, baseName);
@@ -321,44 +326,72 @@ ${entry.content}
       obj[name] = createRegionBlock(name, query[name].value);
       return obj;
     },
-    {} as Record<RegionName, string>,
+    {} as Record<RegionName, string>
   );
-  const output: Record<File, string> = {
-    Data: '',
-    All: '',
-    PreviousAll: '',
-    PreviousData: '',
-  };
 
-  const buildOutput = (part: 'partOfAll' | 'partOfData', isPrevious: boolean): string => {
-    const parts: string[] = [];
-    REGION_CONFIG_MAP.forEach((config, name) => {
-      // name 是 BaseRegionName
-      if (config[part]) {
-        let key: RegionName;
-        if (isPrevious) {
-          key = `previous_${name}` as PreviousRegionName;
-        } else {
-          key = name;
-        }
+  return result;
+}
+
+
+//---
+const dataExport = createRegionBlock('export', 'export {data,privateData}');
+const allExport = createRegionBlock('export', 'export {entryMap,data,vfs,privateData,mainText}');
+
+// 3. 定义一个配置映射表，使逻辑更清晰
+const FILE_TYPE_CONFIG = {
+  Data: {
+    part: 'partOfData' as const,
+    isPrevious: false,
+    exportBlock: dataExport
+  },
+  All: {
+    part: 'partOfAll' as const,
+    isPrevious: false,
+    exportBlock: allExport
+  },
+  PreviousData: {
+    part: 'partOfData' as const,
+    isPrevious: true,
+    exportBlock: dataExport
+  },
+  PreviousAll: {
+    part: 'partOfAll' as const,
+    isPrevious: true,
+    exportBlock: allExport
+  }
+};
+
+export const buildFileContent = (fileType: File, result: Record<RegionName, string>): string => {
+  // 1. 从配置中获取当前文件类型所需的参数
+  const config = FILE_TYPE_CONFIG[fileType];
+  const { part, isPrevious, exportBlock } = config;
+
+  // 2. 内部实现原 buildOutput 的逻辑
+  const parts: string[] = [];
+  REGION_CONFIG_MAP.forEach((configEntry, name) => {
+    // name 是 BaseRegionName
+    if (configEntry[part]) {
+      let key: RegionName;
+      if (isPrevious) {
+        key = `previous_${name}` as PreviousRegionName;
+      } else {
+        key = name;
+      }
+
+      // 确保 result 中有这个 key，避免 undefined
+      if (result[key] !== undefined) {
         parts.push(result[key]);
       }
-    });
-    return parts.join('\n');
-  };
+    }
+  });
 
-  const dataExport = createRegionBlock('export', 'export {data,privateData}');
-  const allExport = createRegionBlock(
-    'export',
-    'export {entryMap,data,privateData,mainText,status}',
-  );
+  const content = parts.join('\n');
 
-  output.Data = [buildOutput('partOfData', false), dataExport].join('\n');
-  output.All = [buildOutput('partOfAll', false), allExport].join('\n');
-  output.PreviousData = [buildOutput('partOfData', true), dataExport].join('\n');
-  output.PreviousAll = [buildOutput('partOfAll', true), allExport].join('\n');
-  return output;
-}
+  // 3. 组合内容和导出模块
+  return [content, exportBlock].join('\n');
+};
+//---
+
 
 /**
  * 代码执行后应该生成的新楼层消息

@@ -1,0 +1,17 @@
+{
+    "id": "41d24488-d617-4519-af7f-e1d11146c28b",
+    "scriptName": "1去除多余代码块包裹",
+    "findRegex": "/```javascript|```/gm",
+    "replaceString": "",
+    "trimStrings": [],
+    "placement": [
+        2
+    ],
+    "disabled": false,
+    "markdownOnly": true,
+    "promptOnly": true,
+    "runOnEdit": false,
+    "substituteRegex": 0,
+    "minDepth": null,
+    "maxDepth": null
+}

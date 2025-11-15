@@ -10,7 +10,11 @@
         ],
         "module": "ESNext",
         "types": [
-            "vite/client"
+            "vite/client",
+            "jquery",
+            "lodash",
+            "toastr",
+            "type-fest"
         ],
         "skipLibCheck": true,
         "sourceMap": true,
@@ -38,5 +42,10 @@
     "include": [
         "src",
     ],
-    "exclude": ["src/ST","other"]
+    "exclude": [
+        "ST",
+        "other",
+        "**/node_modules/**",
+        "**/dist/**",
+    ]
 }

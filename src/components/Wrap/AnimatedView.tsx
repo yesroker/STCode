@@ -1,6 +1,6 @@
 // src/components/AnimatedView.tsx
 import React from 'react';
-import { cn } from '@/lib/utils'; // 假设的工具函数
+import { cn } from '@/utils'; // 假设的工具函数
 
 
 interface AnimatedViewProps {
